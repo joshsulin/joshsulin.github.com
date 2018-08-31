@@ -1,0 +1,238 @@
+---
+layout: post
+title:  "剖析JDK动态代理技术"
+date:   2018-08-31 19:51:10 +0800
+categories: Java
+---
+### 为什么要写这篇博客?
+
+很简单就是想把`JDK动态代理技术`以自己的语言描述清楚。
+
+### 什么是JDK动态代理及哪些功能是基于JDK动态代理实现的?
+
+#### 什么是JDK动态代理?
+关于概念的解释, 比如 `什么是代理`、`什么是静态代理`、`什么是动态代理` 大家就各自网上搜索了, 这里不做过多解释。
+
+#### 哪些功能是基于JDK动态代理实现?
+比如 Spring AOP, 其中最常用的 @Transactional, 该注解作用于方法, 当执行该方法开始时, 开启事务, 当执行该方法结束时, 关闭事务。其它的还有类似@Cacheable 等等。
+
+### JDK动态代理涉及到哪些角色(类)及它们是如何运转及调用关系？
+
+以下这张图展示了JDK动态代理各类及方法的调用关系, 图中各类前有编号, 按照编号顺序讲解一下。
+![JDK动态代理各类逻辑图](/img/post/JDK动态代理逻辑图.png)
+
+1、被代理类(UserServiceImpl): 很容易理解, 即使我们讲的是JDK动态代理, 肯定要有被代理类啊, 其实就是正常业务逻辑类。
+
+2、接口(UserService): 定义一个统一接口, 现在都是基于接口编程, 肯定要有一个接口。其实JDK动态代理规定: 被代理类和代理类必须实现同一个接口。
+
+3、代理类($Proxy0): 这是一个动态生成的类, 程序运行过程中生成并保存在内存中。通过Proxy.newProxyInstance来生成的。
+
+4、类Proxy, 这是代理类需要继承的类, 代理类动态生成过程中继承Proxy类。
+
+5、类MyInvocationHandler: 我们需要在该类invoke方法里实现被代理后的逻辑。
+
+6、接口InvocationHandler: 通过Proxy类可以看到, h.invoke其实是调用实现了接口InvocationHandler的invoke方法。
+
+7、before方法: 在类MyInvocationHandler里面定义的方法, 用于实现被代理类执行之前需要完成的事情。
+
+8、after方法: 在类MyInvocationHandlerj里面定义的方法, 用于实现被代理类执行之后需要完成的事情。
+
+
+### JDK动态代理demo示例程序
+
+直接上代码
+```java
+// 定义UserService接口
+public interface UserService {
+    String execute();
+}
+```
+
+```java
+// 定义被代理者类
+public class UserServiceImpl implements UserService {
+    @Override
+    public String execute() {
+        System.out.println("执行业务逻辑方法 ==> 2 step");
+        return null;
+    }
+}
+```
+
+```java
+// 定义InvocationHandler接口实现类, 具体代理逻辑实现类
+public class MyInvocationHandler implements InvocationHandler {
+
+    private UserService userService;
+    public MyInvocationHandler(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        before();
+        method.invoke(userService, args);
+        after();
+        return null;
+    }
+
+    private void before() {
+        System.out.println("执行业务逻辑前, 需要执行开启事务功能 ==> 1 step");
+    }
+
+    private void after() {
+        System.out.println("执行业务逻辑后, 需要执行关闭事务功能 ==> 3 step");
+    }
+}
+```
+
+```java
+// 定义测试入口类, Proxy.newProxyInstance 方法能生成代理类
+public class MyTest {
+    public static void main(String[] args) {
+        UserService proxy = (UserService) Proxy.newProxyInstance(MyTest.class.getClassLoader(),
+                new Class<?>[]{UserService.class}, new MyInvocationHandler(new UserServiceImpl()));
+        proxy.execute();
+    }
+}
+```
+通过示例程序, 能够明白 Proxy.newProxyInstance 方法才是最重要的, 它能在程序运行过程中动态的生成代理类。
+
+### JDK动态代理技术中最重要的代理类源代码分析
+
+接下来, 我们把动态生成的代理类的字节码保存到class文件里面, 然后再通过反编码成.java文件, 研究一下动态生成的代理类长什么样子。
+
+这里引入一个类 ProxyGenerator, 它有一个方法 generateProxyClass, 用于生成代理类的字节码。
+
+```java
+byte[] $Proxy0s = ProxyGenerator.generateProxyClass("$Proxy0", new Class<?>[]{UserService.class});
+FileOutputStream fileOutputStream;
+fileOutputStream = new FileOutputStream("$Proxy0.class");
+fileOutputStream.write($Proxy0s);
+```
+
+生成的.class文件, 通过反编译过后的 java 源程序如下:
+```java
+import com.josh.proxy.UserService;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.UndeclaredThrowableException;
+
+public final class $Proxy0
+extends Proxy
+implements UserService {
+    private static Method m1;
+    private static Method m2;
+    private static Method m3;
+    private static Method m0;
+
+    public $Proxy0(InvocationHandler invocationHandler) throws  {
+        super(invocationHandler);
+    }
+
+    public final boolean equals(Object object) throws  {
+        try {
+            return (Boolean)this.h.invoke(this, m1, new Object[]{object});
+        }
+        catch (Error | RuntimeException throwable) {
+            throw throwable;
+        }
+        catch (Throwable throwable) {
+            throw new UndeclaredThrowableException(throwable);
+        }
+    }
+
+    public final String toString() throws  {
+        try {
+            return (String)this.h.invoke(this, m2, null);
+        }
+        catch (Error | RuntimeException throwable) {
+            throw throwable;
+        }
+        catch (Throwable throwable) {
+            throw new UndeclaredThrowableException(throwable);
+        }
+    }
+
+    public final String execute() throws  {
+        try {
+            return (String)this.h.invoke(this, m3, null);
+        }
+        catch (Error | RuntimeException throwable) {
+            throw throwable;
+        }
+        catch (Throwable throwable) {
+            throw new UndeclaredThrowableException(throwable);
+        }
+    }
+
+    public final int hashCode() throws  {
+        try {
+            return (Integer)this.h.invoke(this, m0, null);
+        }
+        catch (Error | RuntimeException throwable) {
+            throw throwable;
+        }
+        catch (Throwable throwable) {
+            throw new UndeclaredThrowableException(throwable);
+        }
+    }
+
+    static {
+        try {
+            m1 = Class.forName("java.lang.Object").getMethod("equals", Class.forName("java.lang.Object"));
+            m2 = Class.forName("java.lang.Object").getMethod("toString", new Class[0]);
+            m3 = Class.forName("com.josh.proxy.UserService").getMethod("execute", new Class[0]);
+            m0 = Class.forName("java.lang.Object").getMethod("hashCode", new Class[0]);
+            return;
+        }
+        catch (NoSuchMethodException noSuchMethodException) {
+            throw new NoSuchMethodError(noSuchMethodException.getMessage());
+        }
+        catch (ClassNotFoundException classNotFoundException) {
+            throw new NoClassDefFoundError(classNotFoundException.getMessage());
+        }
+    }
+}
+```
+接下来对动态生成的代理类源代码进行初步分析。
+
+1、public final class $Proxy0 extends Proxy implements UserService 
+> 继承了Proxy类并实现了UserService接口, 理解了为什么 Proxy.newProxyInstance 第二个参数要传入接口了吧? 类可以实现多个接口, 所以第二个参数为数组。
+
+2、代理类实现的接口方法。execute(), 核心代码就一句
+> return (String)this.h.invoke(this, m3, null);
+
+> 这里的h是什么, 继承了Proxy类, 里面有 protected InvocationHandler h; h是成员变量, 类型为InvocationHandler, 再观察一下代理类的构造方法。应该理解了为什么Proxy.newProxyInstance第三个参数一定要传入实现了InvocationHandler接口的类的对象。
+
+3、代理类实现的接口方法里, 有 h.invoke(this, m3, null) 这句话。现在应该理解了MyInvocationHandler类里面invoke方法3个参数的含意了吧。
+
+> m3 = Class.forName("com.josh.proxy.UserService").getMethod("execute", new Class[0]);
+
+> public Object invoke(Object proxy, Method method, Object[] args)。
+不做过多解释了, 大家去理解一下吧。
+
+### 如果我们自己来实现JDK动态代理关键技术点和实现步骤有哪些?
+
+通过上面的讲解, 大家应该了解了JDK动态代理到底是怎么一回事了. 整个过程中最重要的方法其实是 Proxy.newProxyInstance(), 那它内部到底做了什么事情? 值得我们去深入探索。
+在深入探索这个方法源码之前, 我们思考一下如果是我们来实现, 我们应该如何实现?
+
+Poryx.newProxyInstance() 方法作用: 运行时生成代理类的实例。既然返回类的实例, 肯定得有实例对应的类, 类又是如何生成的呢? 是不是可以用流的方式, 将字符串拼接好写到.java文件里面。
+
+第一步: 用字符串的形式拼凑出内存里面代理类。
+
+第二步: 把字符串的类输出到一个文件(.java)里面。
+
+第三步: 把.java文件编译。
+
+第四步: 把对应编译出来的字节码文件加载到jvm内存中。
+
+### JDK动态代理源码分析
+
+本来是想将自己阅读源码后的收获用自己的语言描述出来, 写到一半时, 突然发现了一篇非常清晰容懂的文章, 比我说的好, 所以就将这篇文章的链接放上。
+
+[JDK动态代理源码分析](https://github.com/biezhi/java-bible/blob/master/designpatterns/proxy.md)
+
+
+  [1]: http://redmine.tuan800-inc.com/upload/upload_1535622967166_73775.png
