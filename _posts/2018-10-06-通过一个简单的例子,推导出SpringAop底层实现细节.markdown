@@ -10,7 +10,7 @@ categories: Java
 ### 前提条件
 本文不解释```Aop是什么?```、```为什么要使用Aop?```这些概念, 看本文前, 要求大家对这些概念要非常清楚, 不清楚的自行在网上搜索学习。
 
-本文通过一个简单的例子入手, 一步一步的剖析出SpringAop底层实现细节。由于SpringAop底层实现重要技术为动态代理(JDK动态代理、CGLIB), 在剖析中重点以JDK动态代理为切入点, 读本文前大家一定要熟悉JDK动态代理技术, 之前写过一篇博文<a href="http://joshsulin.github.io/java/2018/08/31/%E5%89%96%E6%9E%90JDK%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%8A%80%E6%9C%AF/" target="_blank">《剖析JDK动态代理技术》</a>, 不明白的可以看看, 希望对大家有帮助。熟悉JDK动态代理技术的朋友, 一定对Proxy类、InvocationHandler接口、invoke方法、Proxy.newProxyInstance方法非常清楚, 每个类及方法调用时机及调用流程都要心中清楚, 这是阅读本文的基础。
+本文将通过一个简单的例子入手, 一步一步的剖析出SpringAop底层实现细节。由于SpringAop底层实现重要技术为动态代理(JDK动态代理、CGLIB), 在剖析中重点以JDK动态代理为切入点, 读本文前大家一定要熟悉JDK动态代理技术, 之前写过一篇博文<a href="http://joshsulin.github.io/java/2018/08/31/%E5%89%96%E6%9E%90JDK%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%8A%80%E6%9C%AF/" target="_blank">《剖析JDK动态代理技术》</a>, 不明白的可以看看, 希望对大家有帮助。熟悉JDK动态代理技术的朋友, 一定对Proxy类、InvocationHandler接口、invoke方法、Proxy.newProxyInstance方法非常清楚, 每个类及方法调用时机及调用流程都要心中清楚, 这是阅读本文的基础。
 
 ### 从一个简单例子入手
 
@@ -66,11 +66,12 @@ public class PkgTypeAspectConfig {
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+        http://www.springframework.org/schema/beans/spring-beans.xsd  
+				http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
         
     <aop:aspectj-autoproxy />
-    <bean id="productService" class="com.josh.aop.service.ProductService" />
-    <bean id="pkgTypeAspectConfig" class="com.josh.aop.config.PkgTypeAspectConfig" />
+		<bean id="productService" class="com.josh.aop.service.ProductService"/>
+		<bean id="pkgTypeAspectConfig" class="com.josh.aop.config.PkgTypeAspectConfig" />
 </beans>
 ```
 
@@ -98,7 +99,7 @@ delete product
 ###after
 ```
 
-以上例子不难理解, 这是SpringAop实现的流程, 相信大家肯定都用过, 这也是框架的强大之处, 仅仅使用了几行代码, 就完成了如此强大的功能, 使用之余, 不知大家是否思考过, 为什么依赖几个简单的配置(@Aspect、@Pointcut、@Before、@After、aop:aspectj-autoproxy), 强大的功能就能实现, 这背后到底发生了什么?
+以上例子不难理解, 这是编写SpringAop功能时的能用流程, 相信大家肯定都用过, 同时体现了框架的强大之处, 仅仅使用了几行代码, 就完成了如此强大的功能, 使用之余, 不知大家是否思考过, 为什么依赖几个简单的配置(@Aspect、@Pointcut、@Before、@After、aop:aspectj-autoproxy), 强大的功能就能实现, 这背后到底发生了什么?
 
 网上几乎每篇文章都会说, SpringAop实现的核心是动态代理技术, <a href="http://joshsulin.github.io/java/2018/08/31/%E5%89%96%E6%9E%90JDK%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%8A%80%E6%9C%AF/" target="_blank">《剖析JDK动态代理技术》</a>这篇文章让我们知道可以把内存中动态代理生成的类保存到文件中, 反编译可以查看生成的动态类。
 
@@ -277,9 +278,9 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 ### JdkDynamicAopProxy.invoke() 方法分析(方法太长,就不列出方法体了)
 
 #### 逻辑猜想
-之前两个例子, invoke方法的逻辑为. 在方法调用前写一段逻辑, 接着 method.invoke(targetClass, args), 最后在方法结束前写一段逻辑。顺着这个思路, 但是SpringAop中一个方法可以支持很多增强(advise), 如果当只有一个前置增强时, 可以将增强方法放在目标方法调用前执行, 如果当只有一个后置增强时, 可以将增强方法放在目标方法调用后执行, 如果当前置增强和后置增强都存在时, 可以将增强方法放在目标方法调用前后执行。但是如果有10个前置增强呢，或者10个后置增强，或者有无数个前置增强和后置增强呢，再如果有很多环绕增强呢, 硬编码肯定无法满足要求。
+之前我们手写的两个例子, invoke方法的逻辑为. 在方法调用前写一段逻辑, 接着 method.invoke(targetClass, args), 最后在方法结束前写一段逻辑。顺着这个思路, 但是SpringAop中一个方法可以支持很多增强(advise), 如果当只有一个前置增强时, 可以将增强方法放在目标方法调用前执行, 如果当只有一个后置增强时, 可以将增强方法放在目标方法调用后执行, 如果当前置增强和后置增强都存在时, 可以将增强方法放在目标方法调用前后执行。但是如果有10个前置增强呢，或者10个后置增强，或者有无数个前置增强和后置增强呢，再如果有很多环绕增强呢, 硬编码肯定无法满足要求。
 
-很多方法都需要执行, 但是按照顺序依次执行, 是不是我们把所有要执行的方法放在数组里面, 遍历该数组, 达到链式执行的效果, 这样再多的增强都可以顺序的执行完了。
+很多方法都需要执行, 但是按照顺序依次执行, 是不是我们把所有要执行的方法放在数组里面, 遍历该数组, 达到链式执行的效果, 这样再多的增强都可以顺序的执行完了。SpringAop里面真的是这样实现的吗? 带着疑问继续探索。
 
 #### invoke核心逻辑
 ```java
@@ -300,14 +301,14 @@ public Object invoke(Object proxy, Method method, Object[] args) {
     return retVal
 }
 ```
-针对以上逻辑, 先放一放, 下面我先罗列几个类。因为通过执行拦截器链最终都会执行到下面几个类里面的相应方法。<br/>
-@Before -> AtBefore -> public class AspectJMethodBeforeAdvice extends AbstractAspectJAdvice implements MethodBeforeAdvice, Serializable;<br/>
-@After -> AtAfter -> public class AspectJAfterAdvice extends AbstractAspectJAdvice implements MethodInterceptor, AfterAdvice, Serializable;<br/>
-@AfterReturning -> AtAfterReturning -> public class AspectJAfterReturningAdvice extends AbstractAspectJAdvice implements AfterReturningAdvice, AfterAdvice, Serializable;<br/>
-@AfterThrowing -> AtAfterThrowing -> public class AspectJAfterThrowingAdvice extends AbstractAspectJAdvice implements MethodInterceptor, AfterAdvice, Serializable;<br/>
-@Around -> AtAround -> public class AspectJAroundAdvice extends AbstractAspectJAdvice implements MethodInterceptor, Serializable;
+针对以上代码, 我们先暂时不去细探, 下面我先罗列几个类, 因为通过执行拦截器链最终都会执行到下面几个类里面的相应方法。<br/>
+@Before -> AtBefore -> AspectJMethodBeforeAdvice extends AbstractAspectJAdvice implements MethodBeforeAdvice, Serializable;<br/>
+@After -> AtAfter -> AspectJAfterAdvice extends AbstractAspectJAdvice implements <font color="red">MethodInterceptor</font>, AfterAdvice, Serializable;<br/>
+@AfterReturning -> AtAfterReturning -> AspectJAfterReturningAdvice extends AbstractAspectJAdvice implements AfterReturningAdvice, AfterAdvice, Serializable;<br/>
+@AfterThrowing -> AtAfterThrowing -> AspectJAfterThrowingAdvice extends AbstractAspectJAdvice implements <font color="red">MethodInterceptor</font>, AfterAdvice, Serializable;<br/>
+@Around -> AtAround -> AspectJAroundAdvice extends AbstractAspectJAdvice implements <font color="red">MethodInterceptor</font>, Serializable;
 
-以上5种增强方式中, @After、@AfterThrowing、@Around 这三个对应的类都实现了MethodInterceptor接口, 都具有invoke方法, 但是@Before、@AfterReturning所对应的类没有实现MethodInterceptor接口, 为了在调用链中统一能执行相同的方法, 我们需要将@Before、@AfterReturning这两个注解进行转化, 让其具备同样实现MethodInterceptor接口。getInterceptorsAndDynamicInterceptionAdvice()方法就是干了这个事情, 接着分析 getInterceptorsAndDynamicInterceptionAdvice 方法
+以上5种增强方式中, @After、@AfterThrowing、@Around 这三个对应的类都实现了MethodInterceptor接口, 都具有invoke方法, 但是@Before、@AfterReturning所对应的类没有实现MethodInterceptor接口, 为了在调用链中统一能执行相同的方法, 我们需要将@Before、@AfterReturning这两个注解i所对应的类进行转化, 让其具备同样实现MethodInterceptor接口。getInterceptorsAndDynamicInterceptionAdvice()方法就是干了这个事情, 接着分析 getInterceptorsAndDynamicInterceptionAdvice 方法.
 
 #### getInterceptorsAndDynamicInterceptionAdvice(method, targetClass) 
 根据该方法可以看到如下代码:
@@ -338,11 +339,11 @@ public MethodInterceptor[] getInterceptors(Advisor advisor) throws UnknownAdvice
 }
 ```
 经过上面代码转化后, 所有的增强注解, 都会变成都实现了MethodInterceptor接口的类, 都具有invoke方法。<br/>
-@Before -> AtBefore -> AspectJMethodBeforeAdvice extends AbstractAspectJAdvice implements MethodBeforeAdvice, Serializable -> MethodBeforeAdviceInterceptor implements MethodInterceptor, BeforeAdvice, Serializable;<br/>
-@After -> AtAfter -> AspectJAfterAdvice extends AbstractAspectJAdvice implements MethodInterceptor, AfterAdvice, Serializable;<br/>
-@AfterReturning -> AtAfterReturning -> AspectJAfterReturningAdvice extends AbstractAspectJAdvice implements AfterReturningAdvice, AfterAdvice, Serializable -> AfterReturningAdviceInterceptor implements MethodInterceptor, AfterAdvice, Serializable;<br/>
-@AfterThrowing -> AtAfterThrowing -> AspectJAfterThrowingAdvice extends AbstractAspectJAdvice implements MethodInterceptor, AfterAdvice, Serializable;<br/>
-@Around -> AtAround -> public class AspectJAroundAdvice extends AbstractAspectJAdvice implements MethodInterceptor, Serializable;
+@Before -> AtBefore -> AspectJMethodBeforeAdvice extends AbstractAspectJAdvice implements MethodBeforeAdvice, Serializable -> MethodBeforeAdviceInterceptor implements <font color="red">MethodInterceptor</font>, BeforeAdvice, Serializable;<br/>
+@After -> AtAfter -> AspectJAfterAdvice extends AbstractAspectJAdvice implements <font color="red">MethodInterceptor</font>, AfterAdvice, Serializable;<br/>
+@AfterReturning -> AtAfterReturning -> AspectJAfterReturningAdvice extends AbstractAspectJAdvice implements AfterReturningAdvice, AfterAdvice, Serializable -> AfterReturningAdviceInterceptor implements <font color="red">MethodInterceptor</font>, AfterAdvice, Serializable;<br/>
+@AfterThrowing -> AtAfterThrowing -> AspectJAfterThrowingAdvice extends AbstractAspectJAdvice implements <font color="red">MethodInterceptor</font>, AfterAdvice, Serializable;<br/>
+@Around -> AtAround -> public class AspectJAroundAdvice extends AbstractAspectJAdvice implements <font color="red">MethodInterceptor</font>, Serializable;
 
 接下来我们继续分析 执行拦截器链 方法, invocation.proceed()
 
@@ -362,7 +363,7 @@ public Object proceed() throws Throwable {
     ......
 }
 ```
-初看该方面, 提取重点, 看到了invoke方法, 也看到了+1操作, 猜想一下, 是不是通过++操作, 不停的遍历增强器, 调用属于该bean的增强器的 invoke 方法。达到链式调用的效果。
+对该方法进行分析, 看到了invoke方法, 也看到了+1操作, <font color="red">猜想一下</font>, 是不是通过++操作, 不停的遍历增强器, 调用属于该bean的增强器的 invoke 方法。达到链式调用的效果。
 
 当@After增强器, invoke代码如下:
 ```java
@@ -413,17 +414,17 @@ public void afterReturning(@Nullable Object returnValue, Method method, Object[]
 其它具体的方式就不列举了, 都是相同的执行流程。
 
 接下来, 我们模拟一下实际场景, 看看拦截器链的调用过程。
-假设有4个拦截器, 两个@Before, 两个@After. 大家可以在本子上画一下, 是如何进行递归调用的。
+假设有4个拦截器, 两个@Before, 两个@After. 大家可以在线上画一下, 是如何进行递归调用的。
 
-到目前为止, 代理类的方法调用代码就己分析完了, 但是我们还有很多疑问。
-1、为什么当前代理类在执行时, 就能知道它具有哪些拦截器?
-2、如何找到拦截器?
+到目前为止, 代理类的方法调用代码就己分析完了, 但是我们还有很多疑问。<br/>
+1、为什么当前代理类在执行时, 就能知道它具有哪些拦截器?<br/>
+2、如何找到拦截器?<br/>
 3、哪些bean需要被代理? 判断条件是什么?
 
 ### aop:aspectj-autoproxy 标签及bean始化化
-怎么才能搞清楚上面3个问题, 其实细想一下, 上面3个问题, 都可以归类于初始化阶段便能完成的操作, 在初始化所有非延迟单例bean时, 通过beanFactory获取到ioc里面所有的beanDefinition, 遍历所有的beanDefinition, 找到有@Aspect注解的bean, 解析所有的方法, 将@Before、@After等注解的方法封装成一个一个的增强器(advisor), 保存到缓存里面, 待bean初始化时, 取出切面表达式与beanClass、beanName进行匹配, 看是否能匹配切面表达式, 如果能匹配就将满足条件的advisor与beanName进行K-V存储。同时需要将该beanName生成代理类。生成代理类时, 将能匹配上目标类的增强器赋值给InvocationHandler类的成员变量, 当执行代理类方法时好使用上。
+怎样才能搞清楚上面3个问题, 其实<font color='red'>猜想一下</font>, 上面3个问题, 都可以归类于初始化阶段便能完成的操作, 在初始化所有非延迟单例bean时, 通过beanFactory获取到ioc里面所有的beanDefinition, 遍历所有的beanDefinition, 找到有@Aspect注解的bean, 解析出该bean所有的方法, 将@Before、@After等注解的方法封装成一个一个的增强器(advisor), 保存到缓存里面, 待bean初始化时, 取出切面表达式与beanClass、beanName进行匹配, 看是否能匹配到切面表达式, 如果能匹配就将满足条件的advisor与beanName进行K-V存储。同时需要将该beanName生成代理类，生成代理类时, 将能匹配上目标类的增强器赋值给InvocationHandler类的成员变量, 当执行代理类方法时好使用。
 
-对Spring初始化流程熟悉的开发来说, 上面的逻辑想到不会太难。
+对熟悉Spring初始化流程的开发来说, 上面的解决方案应该不难想到, 初始化肯定涉及到标签解析及bean初始化, 接着往下分析.
 
 #### aop:aspectj-autoproxy 标签逻辑分析
 关于自定义标签的解析, 这里不做详细说明。通过aop命名空间, 不难找到这句配置
@@ -501,7 +502,7 @@ AbstractAdvisorAutoProxyCreator.getAdvicesAndAdvisorsForBean<br/>
 ===> BeanFactoryAdvisorRetrievalHelper.findAdvisorBeans<br/>
 ==> AbstractAdvisorAutoProxyCreator.findAdvisorsThatCanApply<br/>
 ===> AopUtils.findAdvisorsThatCanApply<br/>
-大体流程如下:<br/>
+大体流程如下, 由于以上源码太多并且过于复杂, 这里以流程图的形式来梳理逻辑:<br/>
 <a href='/img/post/20181006/03.png' target="_blank"><img src='/img/post/20181006/03.png' /></a>
 <a href='/img/post/20181006/04.png' target="_blank"><img src='/img/post/20181006/04.png' /></a>
 <a href='/img/post/20181006/05.png' target="_blank"><img src='/img/post/20181006/05.png' /></a>
@@ -543,7 +544,7 @@ public Object getProxy(@Nullable ClassLoader classLoader) {
     return Proxy.newProxyInstance(classLoader, proxiedInterfaces, this);
 }
 ```
-Proxy.newProxyInstance函数3个函数, 非常的清晰。
+Proxy.newProxyInstance函数所涉及的3个参数、含义及逻辑就非常的清晰了。
 
 ### 总结
 <a href='/img/post/20181006/07.png' target="_blank"><img src='/img/post/20181006/07.png' /></a>
