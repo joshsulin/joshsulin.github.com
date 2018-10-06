@@ -547,6 +547,8 @@ public Object getProxy(@Nullable ClassLoader classLoader) {
 Proxy.newProxyInstance函数所涉及的3个参数、含义及逻辑就非常的清晰了。
 
 ### 总结
+
+通过上面分析, SpringAop涉及以下三大块功能, 简单画了一下流程图.
 <a href='/img/post/20181006/07.png' target="_blank"><img src='/img/post/20181006/07.png' /></a>
 
   [7]: http://joshsulin.github.io/java/2018/10/01/%E8%AF%BB%E6%87%82Spring%E6%A1%86%E6%9E%B6%E5%90%84%E7%BB%84%E4%BB%B6%E5%AE%9E%E7%8E%B0%E6%BA%90%E7%A0%81%E7%9A%84%E4%B8%89%E4%B8%AA%E5%89%8D%E6%8F%90%E7%9F%A5%E8%AF%86%E7%82%B9/
