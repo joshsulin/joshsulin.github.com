@@ -17,41 +17,46 @@ Java反射机制是在```运行状态```中, 对于任意一个类, 都能够知
 
 #### 常用方法
 
-1、获取反射对象(反射入口)
+1、获取直接继承的父类
+> Class.getSuperclass(); 
+	返回表示此 Class 所表示的实体（类、接口、基本类型或 void）的超类的 Class。
+	如果此Class表示Object类、一个接口、一个基本类型或void, 则返回null。
+
+2、获取反射对象(反射入口)
 > Class. A、Class.forName(全类名); B、类名.class; C、对象.getClass();
 
-2、判断类上是否存在某个注解
+3、判断类上是否存在某个注解
 > clazz.isAnnotationPresent() 同时也存在clazz.isAnnotation(), 先推荐使用前者
 
-3、当存在某个注解时, 先获取到注解, 然后再通过注解获取到注解上的属性
+4、当存在某个注解时, 先获取到注解, 然后再通过注解获取到注解上的属性
 > 注解Class 注解object = clazz.getAnnotation(注解.class)
 > 注解object.属性
 
-4、获取类实现了哪些接口?
+5、获取类实现了哪些接口?
 > Class<?>[] interfaces = clazz.getInterfaces();
 
-5、获取到所有属性
+6、获取到所有属性
 > Field[] fields = getFields() -> 获取所有public字段, 包括父类字段
 > Field[] fields = getDeclaredFields() -> 获取所有字段, publish和projected和private, 但是不包括父类字段。
 
-6、获取属性上是否存在某个注解
+7、获取属性上是否存在某个注解
 > field.isAnnotationPresent(注解.class) 同时也存在 field.isAnnotation()
 
-7、向属性设置新值
+8、向属性设置新值
 > 设置一个强制赋值的表达式: field.setAccessible(true)。
 > field.set(Object obj, Object value); -> 第1个参数obj: 表示当前类对象。
 
-8、获取类里面有哪些方法?
+9、获取类里面有哪些方法?
 > Method[] methods = clazz.getMethods()
 
-9、获取方法上是否存在某个注解
+10、获取方法上是否存在某个注解
 > method.isAnnotationPresent(注解.class)
 
-10、当方法上存在某个注解时, 先获取到注解, 然后再通过注解获取到注解上的属性
+11、当方法上存在某个注解时, 先获取到注解, 然后再通过注解获取到注解上的属性
 > 注解Class 注解object = method.getAnnotation(注解.class).
 > 注解object.属性
 
-11、获取方法参数列表
+12、获取方法参数列表
 > Class<?>[] parameterTypes = method.getParameterTypes();
 
 以上这些方法都得非常熟悉的运用。Spring框架实现的核心应该来说就是反射了。
