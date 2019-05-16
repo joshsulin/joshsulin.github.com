@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "调用mvn xxx命令后, maven到底执行了哪些插件?"
+title:  "运行具体构建任务时, 由哪些插件来完成些构建任务?"
 date:   2019-05-15 22:45:15 +0800
 categories: Maven
 tag: Maven
