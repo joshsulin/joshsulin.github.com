@@ -126,11 +126,11 @@ for ( Plugin plugin : project.getBuild().getPlugins() )
     // 当插件没有配置 <executions> 的, 将过滤掉
     for ( PluginExecution execution : plugin.getExecutions() )
     {
-        if ( execution.getPhase() != null ) 
+        if ( execution.getPhase() != null )
         {
             // 配置了阶段 <phase>compile</phase>
             Map<Integer, List<MojoExecution>> phaseBindings = mappings.get( execution.getPhase() );
-            
+
             // 如果不存在, 也会被过滤掉, 比如 mvn install, 但是根据第四的逻辑, clean对应的插件也在该项目所属的插件里面, 此步能过滤掉不属于待执行任务所对应的阶段
             if ( phaseBindings != null )
             {
@@ -138,6 +138,38 @@ for ( Plugin plugin : project.getBuild().getPlugins() )
                 {
                     MojoExecution mojoExecution = new MojoExecution( plugin, goal, execution.getId() );
                     mojoExecution.setLifecyclePhase( execution.getPhase() );
+                    addMojoExecution( phaseBindings, mojoExecution, execution.getPriority() );
+                }
+            }
+        }
+        // if not then i need to grab the mojo descriptor and look at the phase that is specified
+        // 如果没有那么需要抓住mojo描述符并查看指定的阶段
+        // <executions>
+        //    <execution>
+        //      <id>repackage</id>
+        //      <goals>
+        //          <goal>repackage</goal>
+        //      </goals>
+        //    </execution>
+        // </executions>
+        // mojo描述符(实现插件时, 需要用@Mojo注解标注)如下:
+        // @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true,
+        //    threadSafe = true,
+        //    requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
+        //    requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
+        else
+        {
+            for (String goal : execution.getGoals())
+            {
+                MojoDescriptor mojoDescriptor =
+                            pluginManager.getMojoDescriptor( plugin, goal, project.getRemotePluginRepositories(),
+                                                             session.getRepositorySession() );
+
+                Map<Integer, List<MojoExecution>> phaseBindings = mappings.get( mojoDescriptor.getPhase() );
+                if ( phaseBindings != null )
+                {
+                    MojoExecution mojoExecution = new MojoExecution( mojoDescriptor, execution.getId() );
+                    mojoExecution.setLifecyclePhase( mojoDescriptor.getPhase() );
                     addMojoExecution( phaseBindings, mojoExecution, execution.getPriority() );
                 }
             }
