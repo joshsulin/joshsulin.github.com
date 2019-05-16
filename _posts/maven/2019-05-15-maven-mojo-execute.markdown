@@ -6,7 +6,13 @@ categories: Maven
 tag: Maven
 ---
 
-通过<a href="/maven/2019/05/15/maven-default-configuration-plugin/" target="_blank">上一篇博客</a>可知, Maven针对不同的打包方式配置了不同的插件, 这篇文章将继续研究, 调用mvn xxx命令后, maven到底执行了哪些插件? 
+通过<a href="/maven/2019/05/15/maven-default-configuration-plugin/" target="_blank">这篇博客</a>可知, Maven服务启动时, 系统就己经配置了大量的插件, 足以完成项目编译、打包、测试、部署等基本操作.
+
+但是对于生产项目, 总是会添加一些插件, 并且根据功能需求来决定添加的插件是否应该绑定到生命周期中某个阶段还是单独运行.
+
+`这篇博客将说明, 针对采用Maven来进行构建的Java项目, 运行构建任务(mvn xxx), 到底由哪些插件来完成此构建任务?`
+
+通过阅读Maven源码, 对Maven执行逻辑进行总结, 提取出以下 五步 来说明上面的问题.
 
 ###  第一步: 获取项目打包方式
 
@@ -28,7 +34,7 @@ tag: Maven
 // maven-core-3.5.0-sources.jar!/org/apache/maven/model/plugin/DefaultLifecycleBindingsInjector.java
 Collection<Plugin> defaultPlugins = lifecycle.getPluginsBoundByDefaultToAllLifecycles( packaging );
 ```
-根据Maven默认插件配置文件, 很容易完成.
+根据Maven默认插件配置数据, 很容易完成.
 
 ### 第三步: 获取项目pom.xml文件中配置的插件
 
@@ -57,12 +63,12 @@ Collection<Plugin> defaultPlugins = lifecycle.getPluginsBoundByDefaultToAllLifec
 ### 第四步: 将上面第三步获取的插件和第四步获取的插件进行合并
 
 ```java
-// 获取maven源码里配置的插件(第三步获取的插件)
+// 获取Maven默认配置的插件(第二步获取的插件)
 List<Plugin> src = source.getPlugins();
 
 if ( !src.isEmpty() )
 {
-    // 获取项目pom.xml配置的插件(第四步获取的插件)
+    // 获取项目pom.xml配置的插件(第三步获取的插件)
     List<Plugin> tgt = target.getPlugins();
     
     // 合并后的插件存储到该map中
@@ -93,7 +99,7 @@ if ( !src.isEmpty() )
 }
 ```
 
-### 第五步: 根据当前项目合并后的插件和任务, 筛选出需要执行的插件
+### 第五步: 根据第四步得到的数据, 结合当前构建任务(mvn xxxx), 从中筛选出完成该构建任务需要的插件.
 
 ```java
 final List<MojoExecution> executions = calculateMojoExecutions( session, project, tasks );
@@ -103,7 +109,8 @@ if ( setup )
     setupMojoExecutions( session, project, executions );
 }
 ```
-#### 5.1: 获取指定任务需要执行哪些阶段
+
+#### 5.1: 获取完成指定任务需要依次执行哪些阶段?
 
 ```java
 Map<String, Map<Integer, List<MojoExecution>>> mappings = new LinkedHashMap<>();
@@ -118,7 +125,7 @@ for ( String phase : lifecycle.getPhases() ) {
 }
 ```
 
-#### 5.2: 遍历合并后的插件
+#### 5.2: 遍历所有插件, 将不满足条件的插件过滤掉.(条件1、插件对应的生命周期阶段不在任务所对应的生命周期阶段中. 条件2、插件本身没有绑定到生命周期阶段中) 
 
 ```java
 for ( Plugin plugin : project.getBuild().getPlugins() )
@@ -178,4 +185,4 @@ for ( Plugin plugin : project.getBuild().getPlugins() )
 }
 ```
 
-最终 addMojoExecution() 方法获取到了属于我们任务所对应的插件。
+最终 addMojoExecution() 方法保存了 运行构建任务(mvn xxx), 满足要求的插件.
