@@ -12,7 +12,7 @@ Maven的生命周期是抽象的，这意味着生命周期本身不做任何实
 
 在Maven源码中, 有一个配置文件, 记录了 `生命周期--阶段--默认插件` 的映射关系. 同时Maven针对于不同的打包方式(pom、jar、ejb、maven-plugin、war、ear、rar) 设置了默认的 `生命周期(default)--阶段--默认插件` 的映射关系.
 
-关于该配置文件所处位置 `maven安装包所在目录/lib/maven-core-3.5.0.jar!/META-INF/plexus/components.xml`
+关于该配置文件所处位置 `maven安装包所在目录/lib/maven-core-3.5.0.jar!/META-INF/plexus/components.xml` 或者 <a href="/components.xml" target="_blank">在线查看</a>
 
 根据该配置文件的数据, 可以列出各个阶段应该执行哪些插件?
 
