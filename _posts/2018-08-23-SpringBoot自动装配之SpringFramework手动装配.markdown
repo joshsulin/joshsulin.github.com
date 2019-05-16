@@ -3,6 +3,7 @@ layout: post
 title:  "SpringBoot自动装配之SpringFramework手动装配"
 date:   2018-08-23 20:19:20 +0800
 categories: SpringBoot
+tags: ['SpringBoot', 'Java']
 ---
 ### 前言
 

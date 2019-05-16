@@ -3,7 +3,7 @@ layout: post
 title:  "调用mvn xxx命令后, maven到底执行了哪些插件?"
 date:   2019-05-15 22:45:15 +0800
 categories: Maven
-tag: maven
+tag: Maven
 ---
 
 通过<a href="/maven/2019/05/15/maven-default-configuration-plugin/" target="_blank">上一篇博客</a>可知, Maven针对不同的打包方式配置了不同的插件, 这篇文章将继续研究, 调用mvn xxx命令后, maven到底执行了哪些插件? 

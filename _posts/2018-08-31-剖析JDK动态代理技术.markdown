@@ -3,6 +3,7 @@ layout: post
 title:  "剖析JDK动态代理技术"
 date:   2018-08-31 19:51:10 +0800
 categories: Java
+tag: Java
 ---
 ### 为什么要写这篇博客?
 

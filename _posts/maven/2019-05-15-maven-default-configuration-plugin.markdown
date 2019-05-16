@@ -3,7 +3,7 @@ layout: post
 title:  "Maven提供的默认插件"
 date:   2019-05-15 21:12:15 +0800
 categories: Maven
-tag: maven
+tag: Maven
 ---
 
 Maven的生命周期是抽象的，这意味着生命周期本身不做任何实际的工作，在Maven的设计中，实际的任务（如编译源代码）都交由插件来完成.

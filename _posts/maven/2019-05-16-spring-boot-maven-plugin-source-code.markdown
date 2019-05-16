@@ -3,7 +3,7 @@ layout: post
 title:  "spring-boot-maven-plugin插件源码分析"
 date:   2019-05-16 15:35:15 +0800
 categories: Maven
-tag: maven
+tag: Maven
 ---
 
 初始化Spring-Boot项目, 在pom.xml文件里, 都需要一个插件.
