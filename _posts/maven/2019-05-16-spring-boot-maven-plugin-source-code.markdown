@@ -6,6 +6,14 @@ categories: Maven
 tag: Maven
 ---
 
+通过之前的Maven相关博客, 我们对Maven整体运行流程应该有一个大体认识, 对具体项目运行mvn构建命令时, 能够知道有哪些插件参与此构建任务.
+
+接下来, 我将不断对我们经常使用的插件, 进行源码分析.
+
+这篇博客, 将分析在Spring-Boot项目, 必须使用的一个插件 `spring-boot-maven-plugin`
+
+### spring-boot-maven-plugin 使用
+
 初始化Spring-Boot项目, 在pom.xml文件里, 都需要一个插件.
 
 ```java
@@ -56,7 +64,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 对于默认的Spring-Boot项目, 执行mvn install后, 需要由如下插件完成.
 
-#### 针对 jar 打包方式
+### 针对 jar 打包方式
 
 | 阶段                    | jar     |
 | --------                | :-----  |
@@ -88,9 +96,9 @@ package接受编译好的代码，打包成可发布的格式，如JAR.
 
 针对于同一个spring-boot项目, 引入插件 spring-boot-maven-plugin 与 不引入该插件, 打出来的jar包内容是不一样的. 其实最主要的区别就是 可执行jar包与不可执行jar包.
 
-可执行jar包与不可执行jar包 唯一的区别就是jar包里面的MANIFEST.MF 里面有Main-Class指定。
+可执行jar包与不可执行jar包 唯一的区别就是jar包里面的MANIFEST.MF文件, 包含有Main-Class属性, 指定java -jar 时, 入口类是哪个?
 
-引入插件 spring-boot-maven-plugin, MANIFEST.MF文件内容
+#### 引入插件 spring-boot-maven-plugin, MANIFEST.MF文件内容
 
 ```java
 Manifest-Version: 1.0
@@ -105,7 +113,7 @@ Created-By: Maven Archiver 3.4.0
 Main-Class: org.springframework.boot.loader.JarLauncher
 ```
 
-不引入插件 spring-boot-maven-plugin, MANIFEST.MF文件内容
+#### 不引入插件 spring-boot-maven-plugin, MANIFEST.MF文件内容
 
 ```java
 Manifest-Version: 1.0
@@ -115,9 +123,9 @@ Build-Jdk-Spec: 1.8
 Created-By: Maven Archiver 3.4.0
 ```
 
-通过以上内容的区别, 大体应该知道 spring-boot-maven-plugin <goal>repackage</goal> 的作用了.
+通过对比以上内容, 大体应该知道 spring-boot-maven-plugin <goal>repackage</goal> 的作用了.
 
-接下来我们来走一遍该插件源码
+### 接下来我们对该插件 <goal>repackage</goal> 的源码进行分析
 
 ```java
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true,
@@ -145,7 +153,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 }
 ```
 
-核心逻辑在repackage()方法里面
+#### 核心逻辑在repackage()方法里面
 
 ```java
 private void repackage() throws MojoExecutionException {
@@ -167,7 +175,7 @@ private void repackage() throws MojoExecutionException {
 }
 ```
 
-核心逻辑为 repackager.repackage(target, libraries, launchScript);
+#### 核心逻辑为 repackager.repackage(target, libraries, launchScript);
 
 ```java
 public void repackage(File destination, Libraries libraries, LaunchScript launchScript) throws IOException {
@@ -211,7 +219,7 @@ public void repackage(File destination, Libraries libraries, LaunchScript launch
 }
 ```
 
-核心逻辑 repackage(jarFileSource, destination, libraries, launchScript);
+#### 核心逻辑 repackage(jarFileSource, destination, libraries, launchScript);
 
 ```java
 private void repackage(JarFile sourceJar, File destination, Libraries libraries, LaunchScript launchScript) throws IOException {
@@ -252,3 +260,5 @@ if (startClass == null) {
     startClass = findMainMethodWithTimeoutWarning(source);
 }
 ```
+
+以上代码能说明该项目 <goal>repackage</goal> 目标的功能 
