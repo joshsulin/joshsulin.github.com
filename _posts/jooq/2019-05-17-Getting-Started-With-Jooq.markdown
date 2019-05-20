@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  "JOOQ入门"
+title:  "jOOQ入门"
 date:   2019-05-17 22:19:22 +0800
-categories: Jooq
+categories: jOOQ
 tag: Jooq
 ---
 
