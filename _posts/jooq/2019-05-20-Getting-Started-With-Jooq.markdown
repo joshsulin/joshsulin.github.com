@@ -3,7 +3,7 @@ layout: post
 title:  "jOOQ入门"
 date:   2019-05-20 16:23:40 +0800
 categories: jOOQ
-tag: Jooq
+tag: jOOQ
 ---
 
 本篇博客对应<a href="https://www.jooq.org/doc/latest/manual-pdf/jOOQ-manual-3.11.pdf" target="_blank">官方英文文档</a>, 只是原封不动的进行了翻译, 基本上是借助于Google翻译, 如果这篇博客被你不小心看见, 翻译不流畅的地方, 就直接看官方文档.
