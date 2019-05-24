@@ -6,6 +6,8 @@ categories: Jooq
 tag: Jooq
 ---
 
+非常全的插件文档 <a href="https://www.jooq.org/doc/3.11/manual/code-generation/" target="_blank">请查看官方文档</a>
+
 There is no substantial difference between running the code generator with Maven or in standalone mode.
 使用Maven运行代码生成器或在独立模式下没有实质性区别。
 
