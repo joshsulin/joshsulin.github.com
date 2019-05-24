@@ -42,7 +42,6 @@ Both modes use the exact same <configuration/> element. The Maven plugin configu
 ```
 
 ** Additional Maven-specific flags **
-** 额外的Maven特定标志 **
 
 There are, however, some additional, Maven-specific flags that can be specified with the jooq-codegen-maven plugin only:
 但是，还有一些额外的Maven特定标志，只能使用jooq-codegen-maven插件指定：
