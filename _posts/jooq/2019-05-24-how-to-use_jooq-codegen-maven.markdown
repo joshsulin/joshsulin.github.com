@@ -2,8 +2,8 @@
 layout: post
 title:  "jooq-codegen-maven插件入门"
 date:   2019-05-24 16:19:22 +0800
-categories: Jooq
-tag: Jooq
+categories: jOOQ
+tag: jOOQ
 ---
 
 非常全的插件文档 <a href="https://www.jooq.org/doc/3.11/manual/code-generation/" target="_blank">请查看官方文档</a>
