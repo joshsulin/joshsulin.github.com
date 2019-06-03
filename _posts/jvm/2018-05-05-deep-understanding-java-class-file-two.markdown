@@ -6,8 +6,6 @@ categories: Jvm
 tags: Jvm
 ---
 
-原文: https://blog.csdn.net/zhangjg_blog/article/details/21487287
-
 在上一篇文章 深入理解Java Class文件格式（一） 中， 介绍了class文件在整个java体系结构中的位置和作用， 并对class文件的整体格式做了说明， 介绍了其中的魔数和版本号的相关内容， 并对常量池做了概述。 在本文章， 继续介绍class文件中的其他内容。
 
 ### class文件中的特殊字符串
@@ -90,3 +88,6 @@ class文件中的特殊字符串包括类（包括接口， 枚举）的全限�
 还有一点需要注意， 就是方法和字段的描述符中， 不包括字段名和方法名， 字段描述符中只包括字段类型， 方法描述符中只包括参数列表和返回值类型。 
 
 本文只是介绍class中的特殊字符串， 关于在class文件中如何使用这些字符串， 将会在下一篇博客中讲解， 敬请关注。 
+
+原文: https://blog.csdn.net/zhangjg_blog/article/details/21487287
+

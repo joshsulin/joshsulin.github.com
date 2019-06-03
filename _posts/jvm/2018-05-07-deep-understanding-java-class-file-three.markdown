@@ -6,8 +6,6 @@ categories: Jvm
 tags: Jvm
 ---
 
-原文: https://blog.csdn.net/zhangjg_blog/article/details/21557357
-
 首先， 让我们回顾一下关于class文件格式的之前两篇博客的主要内容。 在 深入理解Java Class文件格式（一） 中， 讲解了class文件在整个java体系结构中的位置和作用， 讲解了class文件中的魔数和版本号相关的信息， 并且对常量池进行了概述。 在 深入理解Java Class文件格式（二） 中， 主要讲解了class文件中的特殊字符串， 包括类的全限定名， 字段描述符和方法描述符， 这些特殊字符串大量出现在class文件的常量池中， 是理解常量池的基础。 本文会详细讲解常量池中的各个数据项。
 
 如果你还没有读过前两篇文章， 建议先去读一下， 这样才能保持知识的连贯性。 前两篇文章的链接已经在上面给出。 下面开始讲解常量池。
@@ -196,3 +194,6 @@ int getAge(){
 ### 总结
 
 本篇博客就到此为止， 在本文中我们主要介绍了常量池中的两种数据项： CONSTANT_NameAndType_info 和 CONSTANT_Utf8_info  。 其中CONSTANT_Utf8_info存储的是源文件中的各种字符串， 而CONSTANT_NameAndType_info表述的是源文件中对一个字段或方法的符号引用的一部分（即 方法名加方法描述符， 或者是 字段名加字段描述符）。在下一篇博客中， 继续讲解常量池中的其他类型的数据项 。 
+
+原文: https://blog.csdn.net/zhangjg_blog/article/details/21557357
+

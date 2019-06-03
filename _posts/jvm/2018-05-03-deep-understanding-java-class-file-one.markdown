@@ -6,8 +6,6 @@ categories: Jvm
 tags: Jvm
 ---
 
-原文: https://blog.csdn.net/zhangjg_blog/article/details/21486985
-
 ### Class文件在Java体系结构中的位置和作用
 
 在上一篇博客中， 大致讲解了Java虚拟机的体系结构和执行原理。 本篇博客主要讲解能够被JVM识别， 加载并执行的class文件的格式。
@@ -88,3 +86,6 @@ Java程序是动态链接的， 在动态链接的实现中， 常量池扮演�
 在详细讲解常量池中的各个数据项之前， 我们有必要先了解一下class文件中的特殊字符串， 因为在常量池中， 特殊字符串大量的出现，这些特殊字符串就是上面说的全限定名和描述符。 要理解常量池中的各个数据项， 必须先了解这些特殊字符串。
 
 对于class文件的讲解会在后续博文中继续， 欢迎关注。
+
+原文: https://blog.csdn.net/zhangjg_blog/article/details/21486985
+
