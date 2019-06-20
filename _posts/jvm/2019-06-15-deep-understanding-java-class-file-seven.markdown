@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "深入理解Java Class文件格式(七)"
-date:   2018-05-15 20:19:20 +0800
+date:   2019-05-15 20:19:20 +0800
 categories: Jvm
 tags: Jvm
 ---
@@ -222,5 +222,3 @@ Constant pool:
 fields是对当前类中定义的字段的描述， 其中每个字段使用一个field_info表示， fields中有fields_count个field_info。
 
 methods是对当前类或者接口中声明的方法的描述， 其中每个方法使用一个method_info表示， methods中有methods_count个method_info。 
-
-原文: https://blog.csdn.net/zhangjg_blog/article/details/22091529

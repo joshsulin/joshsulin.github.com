@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "深入理解Java Class文件格式(三)"
-date:   2018-05-07 20:19:20 +0800
+date:   2019-05-07 20:19:20 +0800
 categories: Jvm
 tags: Jvm
 ---
@@ -194,6 +194,3 @@ int getAge(){
 ### 总结
 
 本篇博客就到此为止， 在本文中我们主要介绍了常量池中的两种数据项： CONSTANT_NameAndType_info 和 CONSTANT_Utf8_info  。 其中CONSTANT_Utf8_info存储的是源文件中的各种字符串， 而CONSTANT_NameAndType_info表述的是源文件中对一个字段或方法的符号引用的一部分（即 方法名加方法描述符， 或者是 字段名加字段描述符）。在下一篇博客中， 继续讲解常量池中的其他类型的数据项 。 
-
-原文: https://blog.csdn.net/zhangjg_blog/article/details/21557357
-

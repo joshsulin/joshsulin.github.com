@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "深入理解Java Class文件格式(六)"
-date:   2018-05-13 20:19:20 +0800
+date:   2019-05-13 20:19:20 +0800
 categories: Jvm
 tags: Jvm
 ---
@@ -173,5 +173,3 @@ Constant pool:
 这几个数据项都持有指向常量池的索引。 真实的信息都是存放在常量池中的， 只不过常量池中的这些信息会被this_class ， super_class ， interfaces_count和interfaces 引用。 
 
 通过本篇博客我们可以知道源文件中的当前类， 当前类的超类以及当前类的超接口在class文件中是如何被描述的。 在下一篇博客中， 将会讲解源文件中的定义的字段， 声明的方法在class文件中是如何描述的。 
-
-原文: https://blog.csdn.net/zhangjg_blog/article/details/21888943

@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "深入理解Java Class文件格式(八)"
-date:   2018-05-17 20:19:20 +0800
+date:   2019-06-17 20:19:20 +0800
 categories: Jvm
 tags: Jvm
 ---
@@ -269,5 +269,3 @@ Constant pool:
 ### 总结
 
 本文就到此为止。 在本文中， 主要讲解了class文件中的一些属性。 这些属性可以出现在class文件中的对个地方， 用来描述一些其他信息。 
-
-原文: https://blog.csdn.net/zhangjg_blog/article/details/22205831
