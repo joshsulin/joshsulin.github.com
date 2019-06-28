@@ -2,8 +2,8 @@
 layout: post
 title:  "简单梳理基于共享内存实现的lua-resty-lock"
 date:   2019-06-28 15:35:15 +0800
-categories: Nginx
-tag: Nginx
+categories: OpenResty 
+tag: OpenResty
 ---
 
 ### 了解Nginx的进程模型
