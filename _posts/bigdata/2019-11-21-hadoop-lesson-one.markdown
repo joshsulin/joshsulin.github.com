@@ -2,7 +2,7 @@
 layout: post
 title:  "Hadoop第一课(Hadoop核心及环境搭建)"
 date:   2019-11-21 20:19:20 +0800
-categories: SpringBoot
+categories: Hadoop
 tags: ['Hadoop']
 ---
 
