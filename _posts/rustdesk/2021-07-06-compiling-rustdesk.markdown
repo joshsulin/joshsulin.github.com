@@ -5,9 +5,9 @@ date:   2021-07-06 08:10:20 +0800
 categories: RustDesk
 tags: ['RustDesk', 'Rust']
 ---
-对于我而言, 一开始不习惯仔仔细细的阅读文档, 直接 git clone、Cargo run '干', 遇到了很多问题. 
+对于我而言, 一开始没有仔仔细细的阅读文档, 直接 git clone、Cargo run '干', 遇到了如下问题.
 
-以下是我在Mac下源码编译RustDesk所遇到的问题.
+记录下来和大家交流. 其实最重要还是仔细[阅读文档](https://github.com/rustdesk/rustdesk).
 
 ### 问题1:
 <a href='/img/rustdesk/01.jpg' target="_blank"><img src='/img/rustdesk/01.jpg' /></a>
