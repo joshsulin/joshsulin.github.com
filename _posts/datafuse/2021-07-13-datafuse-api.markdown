@@ -8,7 +8,7 @@ tags: ['Datafuse', 'Rust']
 
 分析方法参考官方文档 [https://datafuse.rs/development/tracing/](https://datafuse.rs/development/tracing/)
 
-如下几个步骤:
+一条简单的SQL(select version())在datafuse中经历了如下几个步骤:
 
 ### fuse_query::servers::mysql::mysql_handler
 第一行日志: `DEBUG fuse_query::servers::mysql::mysql_handler] Received connect from 127.0.0.1:61928`
