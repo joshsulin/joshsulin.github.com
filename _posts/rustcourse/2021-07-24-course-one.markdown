@@ -58,8 +58,8 @@ tags: ['Rust']
 
 ```Ruby
 # Ruby代码
-5.times{ puts “Hello Ruby”}
-2.days.from_now
+5.times{ puts "Hello Ruby"}
+2.days.from_now;
 ```
 
 ```Rust
