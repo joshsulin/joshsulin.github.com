@@ -74,7 +74,29 @@ tags: ['Rust']
 
 但是 Ruby 的抽象表达能力完全是靠牺牲性能换来的。而 Rust 的抽象是零成本的，Rust 的抽象并不会存在运行时性能开销，这一切都是在编译期完成的。代码清单 1-1 中的迭代 5 次的抽象代码，在编译期会被展开成和手写汇编代码相近的底层代码，所以不存在运行时因为解释这一层抽象而产生的性能开销。对于一门系统级编程语言而言，运行时零成本是非常重要的。这一点，Rust 做到了。Rust 中零成本抽象的基石就是泛型和 trait。
 
-### Rust语言现状和未来
+### Rust发展前景
+
+#### 大厂都在使用Rust
+
+- 国内PingCAP公司的TiKV已经快3.0了，使用Rust开发。
+- 国内区块链公司秘猿，Nervos公链，也使用Rust开发。
+- 知乎搜索引擎用Rust构建。
+- 阿里蚂蚁金服时序数据库、淘宝广告推荐算法都已经使用了Rust。
+- Parity、以太坊区块链。
+- Amazon，使用Rust 作为构建工具。
+- Atlassian，在后端使用Rust。
+- Dropbox，在前后端均使用了Rust。
+- Facebook，使用Rust 重写了源码管理工具。
+- Google，在Fuchsia 项目中部分使用了Rust。
+- Microsoft，在Azure IoT 网络上部分使用了Rust。
+- npm，在其核心服务上使用了Rust。
+- RedHat，使用Rust 创建了新的存储系统。
+- Reddit，使用Rust 处理评论。
+- Twitter，在构建团队中使用Rust。
+
+#### 重点提一下区块链领域
+
+Rust己经成为区块链领域第一开发语言, 越来越多的著名区块链项目已经选择使用Rust作为其开发语言，包括但不限于 Parity, Polkadot, Substrate, Grin, Ethereum classic, Holochain, Cardano-rust, Exonum, Lighthouse, Nimiq, Nervos, Conflux-rust, Codechain, Witnet. Rust语言正在IT工业各个领域快速发展，而由于区块链本身的特质，区块链领域是较早接纳Rust的领域之一。在区块链领域，Rust正以势如破竹之势占领区块链新兴项目市场，很多著名的老项目也在考虑转向使用Rust重写。
 
 ### Rust语言如何执行
 
