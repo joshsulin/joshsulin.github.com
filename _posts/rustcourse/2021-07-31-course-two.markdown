@@ -34,5 +34,5 @@ PPT
 第四: 移动和借用(Moves and Borrowing)
 	Rust是怎么保证只有一个变量拥有它的值, 会进行更深入的讨论.
 
-第五: 分析Rustlings里面5道题
-	通过一个Hello world的程序, 带领大家了解Rust代码如何执行.
+第五: 讨论Rustlings上move_semantics的5道题
+	通过这5道题加深对Rust所有权机制的理解.
