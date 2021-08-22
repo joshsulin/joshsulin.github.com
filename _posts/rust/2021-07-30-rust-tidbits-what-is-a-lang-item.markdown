@@ -1,10 +1,18 @@
 ---
 layout: post
-title:  "Rust趣闻: 什么是Rust语言项(Lang Item)"
+title:  "Rust Tidbits: 什么是Rust语言项(Lang Item)"
 date:   2021-07-30 20:19:20 +0800
 categories: Rust
 tags: ['Rust']
 ---
+
+Rust不是一种简单的语言。就像其他语言一样，它有许多大多数人不知道的复杂性的Tidbits。许多这些Tidbits对于日常的Rust编程来说实际上可能并不重要，但很有趣, 还有一些可能更有用。我发现其中很多都没有在任何地方记录（并非总是应该记录），有时还取决于编译器的内部知识或历史。作为一个编程琐事的爱好者，我决定在遇到这些事情时尝试记下它们。"Tribal Knowledge" 在编程社区中不应该是一个东西；而琐事是很有趣的.
+
+那么什么是Lang Item呢？ Lang Item是stdlib（和libcore）定义编译器需要define types、traits、functions和other items的一种方式。
+
+
+
+
 
 Rustlings是什么?
 
